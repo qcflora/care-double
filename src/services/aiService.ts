@@ -333,6 +333,72 @@ function getGuideResponse(prompt: string): GuideStep[] {
     ]
   }
 
+  if (prompt.includes('洗漱') || prompt.includes('澡') || prompt.includes('清洁') || prompt.includes('洗')) {
+    return [
+      {
+        id: 'ai-1',
+        title: '准备用物',
+        description: '准备温水、毛巾、洗漱用品、干净衣物，调节室温和水温。',
+        tip: '水温以38-40度为宜，用手腕内侧试温不烫手'
+      },
+      {
+        id: 'ai-2',
+        title: '洗脸洗手',
+        description: '先用温水湿润面部和双手，再用洁面产品轻柔清洁，最后冲洗干净。',
+        tip: '注意清洁眼角、耳后、指缝等容易藏污纳垢的部位'
+      },
+      {
+        id: 'ai-3',
+        title: '口腔护理',
+        description: '协助老人刷牙，或用口腔清洁棉擦拭牙齿和牙龈。',
+        tip: '不能自理的老人要做口腔护理，预防口腔感染和吸入性肺炎'
+      },
+      {
+        id: 'ai-4',
+        title: '温水擦身/泡脚',
+        description: '用温水毛巾擦拭身体，或泡脚5-10分钟，擦干涂润肤乳。',
+        tip: hasDiabetes
+          ? '糖尿病老人注意水温不宜过高，仔细检查足部皮肤有无破损'
+          : '注意保暖，只暴露正在清洁的部位，避免着凉'
+      },
+      {
+        id: 'ai-5',
+        title: '整理床铺',
+        description: '更换枕套，整理被褥，协助老人取舒适睡姿。',
+        tip: lowMood ? '睡前可以陪老人聊两句，安抚情绪有助睡眠' : '检查床铺是否平整，有无碎屑，预防压疮'
+      },
+    ]
+  }
+
+  if (prompt.includes('血压') || prompt.includes('血糖') || prompt.includes('测量') || prompt.includes('生命体征')) {
+    return [
+      {
+        id: 'ai-1',
+        title: '准备仪器',
+        description: '准备血压计、血糖仪、试纸、采血针、酒精棉。',
+        tip: '检查试纸有效期，确保仪器电量充足'
+      },
+      {
+        id: 'ai-2',
+        title: '测量血压',
+        description: '静坐5分钟后，袖带绑于肘上2cm处，与心脏同高。',
+        tip: hasHypertension ? '测量前30分钟避免吸烟、饮咖啡，放松情绪' : '手臂与心脏同高，不要说话'
+      },
+      {
+        id: 'ai-3',
+        title: '测量血糖',
+        description: '酒精消毒指尖，待干后采血，滴于试纸上读取数值。',
+        tip: hasDiabetes ? '采血部位轮换，避免反复扎同一处，定期校准仪器' : '采血量要足够，避免结果不准'
+      },
+      {
+        id: 'ai-4',
+        title: '记录数值',
+        description: '将血压、血糖数值记录到健康档案中。',
+        tip: highBloodSugar && hasDiabetes ? '今日血糖偏高，记录后留意饮食和用药情况' : '异常数值及时标注提醒'
+      },
+    ]
+  }
+
   // 默认通用步骤
   return [
     { id: 'ai-1', title: '准备', description: '准备好所需物品，调节环境舒适度。', tip: '提前告知老人即将进行的操作' },
