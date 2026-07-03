@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import type { CareRole, CareTask, Caregiver, HandoffRecord, ElderProfile, LoadLevel } from '../types'
+import type { CareRole, CareTask, Caregiver, HandoffRecord, ElderProfile, LoadLevel, GuideStep } from '../types'
 import { mockTasks, mockCaregivers, mockHandoffs, mockElder } from '../data/mockData'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 
@@ -22,6 +22,12 @@ interface AppContextType extends AppState {
   toggleBreatheModal: () => void
   incrementBreathe: () => void
   addHandoff: (handoff: HandoffRecord) => void
+  addCaregiver: (name: string, role: CareRole, roleLabel: string) => void
+  removeCaregiver: (id: string) => void
+  toggleDuty: (id: string) => void
+  addTask: (task: Omit<CareTask, 'id' | 'completed'>) => void
+  removeTask: (id: string) => void
+  updateTask: (id: string, updates: Partial<CareTask>) => void
   resetData: () => void
 }
 
@@ -34,8 +40,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [completedTaskIds, setCompletedTaskIds] = useLocalStorage<string[]>('zsh_completed', [])
   const [breatheSessions, setBreatheSessions] = useLocalStorage<number>('zsh_breathe', 2)
   const [handoffs, setHandoffs] = useLocalStorage<HandoffRecord[]>('zsh_handoffs', mockHandoffs)
+  const [caregivers, setCaregivers] = useLocalStorage<Caregiver[]>('zsh_caregivers', mockCaregivers)
 
-  const caregivers = mockCaregivers
   const elder = mockElder
 
   const loadLevel: LoadLevel = completedTaskIds.length >= 5 ? 'high' : completedTaskIds.length >= 3 ? 'medium' : 'low'
@@ -56,6 +62,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setHandoffs((prev: HandoffRecord[]) => [handoff, ...prev])
   }, [setHandoffs])
 
+  const addCaregiver = useCallback((name: string, role: CareRole, roleLabel: string) => {
+    const newCaregiver: Caregiver = {
+      id: `c-${Date.now()}`,
+      name,
+      avatar: '',
+      role,
+      roleLabel,
+      isOnDuty: false,
+    }
+    setCaregivers((prev: Caregiver[]) => [...prev, newCaregiver])
+  }, [setCaregivers])
+
+  const removeCaregiver = useCallback((id: string) => {
+    setCaregivers((prev: Caregiver[]) => prev.filter(c => c.id !== id))
+  }, [setCaregivers])
+
+  const toggleDuty = useCallback((id: string) => {
+    setCaregivers((prev: Caregiver[]) => prev.map(c => ({
+      ...c,
+      isOnDuty: c.id === id ? !c.isOnDuty : false,
+    })))
+  }, [setCaregivers])
+
+  const addTask = useCallback((task: Omit<CareTask, 'id' | 'completed'>) => {
+    const newTask: CareTask = {
+      ...task,
+      id: `t-${Date.now()}`,
+      completed: false,
+    }
+    setTasks((prev: CareTask[]) => [...prev, newTask])
+  }, [setTasks])
+
+  const removeTask = useCallback((id: string) => {
+    setTasks((prev: CareTask[]) => prev.filter(t => t.id !== id))
+    setCompletedTaskIds((prev: string[]) => prev.filter(tid => tid !== id))
+  }, [setTasks, setCompletedTaskIds])
+
+  const updateTask = useCallback((id: string, updates: Partial<CareTask>) => {
+    setTasks((prev: CareTask[]) => prev.map(t => t.id === id ? { ...t, ...updates } : t))
+  }, [setTasks])
+
   const handleSetRole = useCallback((role: CareRole) => {
     setUserRole(role)
     setIsOnboarded(true)
@@ -66,9 +113,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setCompletedTaskIds([])
     setBreatheSessions(2)
     setHandoffs(mockHandoffs)
+    setCaregivers(mockCaregivers)
     setIsOnboarded(false)
     setUserRole(null)
-  }, [setTasks, setCompletedTaskIds, setBreatheSessions, setHandoffs, setIsOnboarded, setUserRole])
+  }, [setTasks, setCompletedTaskIds, setBreatheSessions, setHandoffs, setCaregivers, setIsOnboarded, setUserRole])
 
   return (
     <AppContext.Provider value={{
@@ -87,6 +135,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       toggleBreatheModal,
       incrementBreathe,
       addHandoff,
+      addCaregiver,
+      removeCaregiver,
+      toggleDuty,
+      addTask,
+      removeTask,
+      updateTask,
       resetData,
     }}>
       {children}
