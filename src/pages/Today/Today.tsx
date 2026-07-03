@@ -15,6 +15,7 @@ import {
   Sunset,
   Moon,
   Wind,
+  RefreshCw,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import PageHeader from '../../components/Layout/PageHeader'
@@ -37,8 +38,9 @@ const periodLabels: Record<string, { label: string; icon: typeof Sun }> = {
 
 export default function Today() {
   const navigate = useNavigate()
-  const { tasks, loadLevel, breatheSessions, elder } = useApp()
+  const { tasks, loadLevel, breatheSessions, elder, resetData } = useApp()
   const [showGapCard, setShowGapCard] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   const loadColor = loadLevel === 'low' ? 'bg-success' : loadLevel === 'medium' ? 'bg-amber-400' : 'bg-accent'
   const loadText = loadLevel === 'low' ? '轻松' : loadLevel === 'medium' ? '适中' : '较重'
@@ -169,7 +171,38 @@ export default function Today() {
             </div>
           )
         })}
+
+        <button
+          onClick={() => setShowResetConfirm(true)}
+          className="w-full flex items-center justify-center gap-2 py-4 text-text-muted text-sm active:text-text-secondary transition-colors"
+        >
+          <RefreshCw size={16} />
+          <span>重新开始体验</span>
+        </button>
       </div>
+
+      {showResetConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+          <div className="bg-white rounded-card p-6 w-full max-w-sm animate-fade-in-up">
+            <h3 className="text-lg font-semibold text-text-main mb-2">确认重置？</h3>
+            <p className="text-text-secondary text-sm mb-6">重置后所有任务进度和数据将恢复初始状态，可重新体验全部功能。</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="flex-1 py-3 rounded-btn border border-border text-text-secondary font-medium"
+              >
+                取消
+              </button>
+              <button
+                onClick={() => { resetData(); setShowResetConfirm(false) }}
+                className="flex-1 py-3 rounded-btn bg-primary text-white font-medium"
+              >
+                确认重置
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
