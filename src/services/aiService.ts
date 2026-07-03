@@ -217,14 +217,16 @@ async function callLLM(prompt: string, type: 'guide' | 'handoff' | 'multimodal')
 // ============================================================
 
 function getGuideResponse(prompt: string): GuideStep[] {
-  // 根据 prompt 中的老人档案信息动态调整 tip
   const hasOsteoporosis = prompt.includes('骨质疏松')
   const hasHypertension = prompt.includes('高血压')
   const hasDiabetes = prompt.includes('糖尿病')
   const highBloodSugar = prompt.includes('血糖8.2') || prompt.includes('略高')
   const lowMood = prompt.includes('情绪低落')
 
-  if (prompt.includes('翻身')) {
+  const taskTitleMatch = prompt.match(/任务类型：(.+)/)
+  const taskTitle = taskTitleMatch ? taskTitleMatch[1].trim() : ''
+
+  if (taskTitle.includes('翻身')) {
     return [
       {
         id: 'ai-1',
@@ -269,7 +271,7 @@ function getGuideResponse(prompt: string): GuideStep[] {
     ]
   }
 
-  if (prompt.includes('药') || prompt.includes('服药')) {
+  if (taskTitle.includes('药') || taskTitle.includes('服药')) {
     return [
       {
         id: 'ai-1',
@@ -304,7 +306,7 @@ function getGuideResponse(prompt: string): GuideStep[] {
     ]
   }
 
-  if (prompt.includes('进食') || prompt.includes('喂')) {
+  if (taskTitle.includes('进食') || taskTitle.includes('喂') || taskTitle.includes('餐')) {
     return [
       {
         id: 'ai-1',
@@ -333,7 +335,7 @@ function getGuideResponse(prompt: string): GuideStep[] {
     ]
   }
 
-  if (prompt.includes('洗漱') || prompt.includes('澡') || prompt.includes('清洁') || prompt.includes('洗')) {
+  if (taskTitle.includes('洗漱') || taskTitle.includes('澡') || taskTitle.includes('清洁')) {
     return [
       {
         id: 'ai-1',
@@ -370,7 +372,7 @@ function getGuideResponse(prompt: string): GuideStep[] {
     ]
   }
 
-  if (prompt.includes('血压') || prompt.includes('血糖') || prompt.includes('测量') || prompt.includes('生命体征')) {
+  if (taskTitle.includes('血压') || taskTitle.includes('血糖') || taskTitle.includes('测量')) {
     return [
       {
         id: 'ai-1',
