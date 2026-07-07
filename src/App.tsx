@@ -13,6 +13,7 @@ import Health from './pages/Health/Health'
 import Assessment from './pages/Health/Assessment'
 import Profile from './pages/Profile/Profile'
 import Multimodal from './pages/Multimodal/Multimodal'
+import Flow from './pages/Flow/Flow'
 
 function App() {
   const { isOnboarded } = useApp()
@@ -37,6 +38,7 @@ function App() {
             <Route path="assessment" element={<Assessment />} />
             <Route path="profile" element={<Profile />} />
             <Route path="multimodal" element={<Multimodal />} />
+            <Route path="flow" element={<Flow />} />
           </Route>
           <Route path="*" element={<Navigate to="/today" replace />} />
         </Routes>

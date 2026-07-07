@@ -24,6 +24,7 @@ import {
   AlertTriangle,
   Phone,
   Settings,
+  GitBranch,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import TaskManagerModal from '../../components/TaskManagerModal'
@@ -199,6 +200,28 @@ export default function Today() {
         >
           <DoubleRingDiagram />
         </div>
+
+        {/* 嵌入式闭环流程图入口 */}
+        <button
+          onClick={() => navigate('/flow')}
+          className="w-full rounded-card p-4 shadow-soft flex items-center gap-3 active:scale-[0.98] transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #fff8f0 0%, #fff4e6 100%)',
+            border: '1px solid #f4c682',
+          }}
+        >
+          <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+            <GitBranch size={20} className="text-primary" />
+          </div>
+          <div className="flex-1 text-left min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-neutral-900 font-display">嵌入式闭环流程</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-primary text-white text-[10px] font-medium">NEW</span>
+            </div>
+            <p className="text-xs text-neutral-600 mt-0.5">从一次翻身到一次交接 · 5 个停顿 1 个闭环</p>
+          </div>
+          <ChevronRight size={18} className="text-primary flex-shrink-0" />
+        </button>
 
         {/* 今日照护负荷 */}
         <div className="bg-white border border-border rounded-card p-5 shadow-soft">
